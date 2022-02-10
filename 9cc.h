@@ -7,6 +7,7 @@
 
 typedef enum {
   TK_RESERVED, // 記号
+  TK_IDENT, // 識別子
   TK_NUM, // 数字
   TK_EOF, // 入力の終わり
 } TokenKind;
@@ -44,7 +45,9 @@ typedef enum {
   ND_SUB, // -
   ND_MUL, // *
   ND_DIV, // /
-  ND_NUM,
+  ND_ASSIGN, // =
+  ND_LVAR, // ローカル変数
+  ND_NUM, // 整数
   ND_EQ, // ==
   ND_NE, // !=
   ND_LT, // <
@@ -55,9 +58,11 @@ typedef struct Node Node;
 
 struct Node {
   NodeKind kind; // Nodeの種類
+  Node *next;
   Node *lhs; // 左側のノード
   Node *rhs; // 右側のノード
   int val; // ND_NUMの場合の値
+  int offset; // ND_LVARの場合のベースポインタからのオフセット
 };
 
 Node *new_node(NodeKind  kind, Node *lhs, Node *rhs);
@@ -66,12 +71,15 @@ Node *new_node_num(int val);
 
 Node *parse(Token *token);
 
-Node *expr();
-Node *equality();
-Node *relational();
-Node *add();
-Node *mul();
-Node *unary();
-Node *primary();
+Node *program(Token **rest, Token *token);
+Node *stmt(Token **rest, Token *token);
+Node *expr(Token **rest, Token *token);
+Node *assign(Token **rest, Token *token);
+Node *equality(Token **rest, Token *token);
+Node *relational(Token **rest, Token *token);
+Node *add(Token **rest, Token *token);
+Node *mul(Token **rest, Token *token);
+Node *unary(Token **rest, Token *token);
+Node *primary(Token **rest, Token *token);
 
 void gen(Node *node);

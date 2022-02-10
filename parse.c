@@ -15,17 +15,50 @@ Node *new_node_num(int val) {
   return node;
 }
 
-Node *parse(Token *token) {
-  Node *node = expr(&token, token);
-  if (token->kind != TK_EOF) {
-    error_token(token, "extra token");
-  }
+Node *new_node_var(Token *token) {
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = ND_LVAR;
+  node->offset = (token->loc[0] - 'a' + 1) * 8;
   return node;
 }
 
+Node *parse(Token *token) {
+  Node head;
+  head.next = NULL;
+  Node *cur = &head;
+  while (token->kind != TK_EOF) {
+    cur->next = stmt(&token, token);
+    cur = cur->next;
+  }
+
+  return head.next;
+}
+
+Node *program(Token **rest, Token *token) {
+  return stmt(rest, token);
+}
+
+Node *stmt(Token **rest, Token *token) {
+  Node *node = expr(&token, token);
+  if (!equal(token, ";")) {
+    error_token(token, "expected '%s'", ";");
+  }
+  token = token->next;
+  *rest = token;
+  return node;
+}
 
 Node *expr(Token **rest, Token *token) {
-  return equality(rest, token);
+  return assign(rest, token);
+}
+
+Node *assign(Token **rest, Token *token) {
+  Node *node = equality(&token, token);
+  if (equal(token, "=")) {
+    node = new_node(ND_ASSIGN, node, assign(&token, token->next));
+  }
+  *rest = token;
+  return node;
 }
 
 Node *equality(Token **rest, Token *token) {
@@ -117,6 +150,11 @@ Node *primary(Token **rest, Token *token) {
     if (!equal(token, ")")) {
       error_token(token, "expected '%s'", ")");
     }
+    *rest = token->next;
+    return node;
+  }
+  if (token->kind == TK_IDENT) {
+    Node *node = new_node_var(token);
     *rest = token->next;
     return node;
   }
