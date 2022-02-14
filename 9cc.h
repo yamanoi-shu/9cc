@@ -83,3 +83,13 @@ Node *unary(Token **rest, Token *token);
 Node *primary(Token **rest, Token *token);
 
 void gen(Node *node);
+
+typedef struct LVar LVar;
+
+struct LVar {
+    LVar *next; // 次の変数かNULL
+    char *name; // 変数の名前
+    int len; // 変数の名前の長さ
+    int offset; // RBPからのオフセット
+}
+

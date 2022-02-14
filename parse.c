@@ -1,5 +1,17 @@
 #include "9cc.h"
 
+// ローカル変数
+LVar *locals;
+
+LVar *find_lvar(Token *token) {
+  for (LKVar *var = locals; var; var = var->next) {
+    if (var->len == token->len && !memcmp(token->loca, var->name, var->len)) {
+      return var;
+    }
+  }
+  return NULL;
+}
+
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
   Node *node = calloc(1, sizeof(Node));
   node->kind = kind;
