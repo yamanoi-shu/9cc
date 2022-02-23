@@ -80,7 +80,7 @@ Token *tokenize(char *p) {
   Token *cur = &head;
 
   while(*p) {
-    if (isspace(*p)) {
+   if (isspace(*p)) {
       p++;
       continue;
     }
@@ -97,7 +97,13 @@ Token *tokenize(char *p) {
     }
 
     if ('a' <= *p && *p <= 'z') {
-      cur = new_token(TK_IDENT, cur, p++, 1);
+      int len = 0;
+      char *buf = p;
+      while (!strchr("+-*/()<>;=", *p) && ('a' <= *p && *p <= 'z')) {
+        len++;
+        p++;
+      }
+      cur = new_token(TK_IDENT, cur, buf, len);
       continue;
     }
 

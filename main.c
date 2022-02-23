@@ -9,6 +9,7 @@ int main(int argc, char **argv) {
   char *user_input = argv[1];
   // トークナイズする
   Token *token = tokenize(user_input);
+
   // パースする
   Node *node = parse(token);
 

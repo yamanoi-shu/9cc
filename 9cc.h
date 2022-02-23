@@ -91,5 +91,5 @@ struct LVar {
     char *name; // 変数の名前
     int len; // 変数の名前の長さ
     int offset; // RBPからのオフセット
-}
+};
 

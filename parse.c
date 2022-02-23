@@ -4,8 +4,8 @@
 LVar *locals;
 
 LVar *find_lvar(Token *token) {
-  for (LKVar *var = locals; var; var = var->next) {
-    if (var->len == token->len && !memcmp(token->loca, var->name, var->len)) {
+  for (LVar *var = locals; var; var = var->next) {
+    if (var->len == token->len && !memcmp(token->loc, var->name, var->len)) {
       return var;
     }
   }
@@ -30,7 +30,26 @@ Node *new_node_num(int val) {
 Node *new_node_var(Token *token) {
   Node *node = calloc(1, sizeof(Node));
   node->kind = ND_LVAR;
-  node->offset = (token->loc[0] - 'a' + 1) * 8;
+  LVar *lvar = find_lvar(token);
+  if (lvar) {
+    node->offset = lvar->offset;
+  } else {
+    if (locals) {
+      lvar = calloc(1, sizeof(LVar));
+      lvar->next = locals;
+      lvar->name = token->loc;
+      lvar->len = token->len;
+      lvar->offset = locals->offset + 8;
+    } else {
+      lvar = calloc(1, sizeof(LVar));
+      lvar->name = token->loc;
+      lvar->len = token->len;
+      lvar->offset = 8;
+      locals = lvar;
+    }
+      node->offset = lvar->offset;
+      locals = lvar;
+  }
   return node;
 }
 
