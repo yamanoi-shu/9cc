@@ -70,7 +70,15 @@ Node *program(Token **rest, Token *token) {
 }
 
 Node *stmt(Token **rest, Token *token) {
-  Node *node = expr(&token, token);
+  Node *node;
+
+  if (token->kind == TK_RETURN) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_RETURN;
+    node->lhs = expr(&token, token->next);
+  } else {
+    node = expr(&token, token);
+  }
   if (!equal(token, ";")) {
     error_token(token, "expected '%s'", ";");
   }

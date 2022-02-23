@@ -9,6 +9,7 @@ typedef enum {
   TK_RESERVED, // 記号
   TK_IDENT, // 識別子
   TK_NUM, // 数字
+  TK_RETURN, // return
   TK_EOF, // 入力の終わり
 } TokenKind;
 
@@ -52,6 +53,7 @@ typedef enum {
   ND_NE, // !=
   ND_LT, // <
   ND_LE, // <=
+  ND_RETURN // return
 } NodeKind;
 
 typedef struct Node Node;

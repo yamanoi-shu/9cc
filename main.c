@@ -10,6 +10,12 @@ int main(int argc, char **argv) {
   // トークナイズする
   Token *token = tokenize(user_input);
 
+  // トークナイズ検証用
+  // while(token != NULL) {
+  //   printf("token: %s\n", token->loc);
+  //   token = token->next;
+  // }
+
   // パースする
   Node *node = parse(token);
 
