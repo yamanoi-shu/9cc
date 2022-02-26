@@ -72,17 +72,79 @@ Node *program(Token **rest, Token *token) {
 Node *stmt(Token **rest, Token *token) {
   Node *node;
 
-  if (token->kind == TK_RETURN) {
-    node = calloc(1, sizeof(Node));
-    node->kind = ND_RETURN;
-    node->lhs = expr(&token, token->next);
-  } else {
-    node = expr(&token, token);
+  switch (token->kind) {
+    case TK_RETURN:
+      node = calloc(1, sizeof(Node));
+      node->kind = ND_RETURN;
+      node->lhs = expr(&token, token->next);
+    case TK_IF:
+      token = token->next;
+      if (!equal(token, "(")) {
+        error_token(token, "expected '%s'", "(");
+      }
+      token = token->next;
+      node = calloc(1, sizeof(Node));
+      node->kind = ND_IF;
+      node->cond = expr(&token, token);
+      if (!equal(token, ")")) {
+        error_token(token, "expected '%s'", ")");
+      }
+      token = token->next;
+      node->then = stmt(&token, token);
+      if token->kind == TK_ELSE {
+        node->els = stmt(&token, token->next);
+      }
+      break;
+    case TK_WHILE:
+      token = token->next;
+      if (!equal(token, "(")) {
+        error_token(token, "expected '%s'", "(");
+      }
+      token = token->next;
+      node = calloc(1, sizeof(Node));
+      node->kind = ND_WHILE;
+      node->cond = expr(&token, token);
+      if (!equal(token, ")")) {
+        error_token(token, "expected '%s'", ")");
+      }
+      node->body = stmt(&token, token->next);
+      break;
+    case TK_FOR:
+      token = token->next;
+      node = calloc(1, sizeof(Node));
+      node->kind = ND_WHILE;
+      if (!equal(token, "(")) {
+        error_token(token, "expected '%s'", "(");
+      }
+      token = token->next;
+      if (!equal(token, ";")) {
+        node->init = expr(&token, token);
+      }
+      if (!equal(token, ";")) {
+        error_token(token, "expected '%s'", ";");
+      }
+      if (!equal(token, ";")) {
+        node->cond = expr(&token, token);
+      }
+      if (!equal(token, ";")) {
+        error_token(token, "expected '%s'", ";");
+      }
+      if (!equal(token, ")")) {
+        node->inc = expr(&token, token);
+      }
+      if (!equal(token, ")")) {
+        error_token(token, "expected '%s'", ")");
+      }
+      node->body = stmt(&token, token->next);
+      break;
+    default:
+      node = expr(&token, token);
+      if (!equal(token, ";")) {
+        error_token(token, "expected '%s'", ";");
+      }
+      token = token->next;
+      break;
   }
-  if (!equal(token, ";")) {
-    error_token(token, "expected '%s'", ";");
-  }
-  token = token->next;
   *rest = token;
   return node;
 }
