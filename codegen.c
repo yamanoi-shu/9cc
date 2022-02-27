@@ -45,8 +45,8 @@ void gen(Node *node) {
       if (node->els != NULL) {
         printf("  je .Lelse%d\n", labelNum);
         gen(node->then);
-        printf("  jmp .Lend%d", labelNum);
-        printf("Lelse%d:\n", labelNum);
+        printf("  jmp .Lend%d\n", labelNum);
+        printf(".Lelse%d:\n", labelNum);
         gen(node->els);
       } else {
         printf("  je .Lend%d\n", labelNum);
