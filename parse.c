@@ -77,6 +77,11 @@ Node *stmt(Token **rest, Token *token) {
       node = calloc(1, sizeof(Node));
       node->kind = ND_RETURN;
       node->lhs = expr(&token, token->next);
+      if (!equal(token, ";")) {
+        error_token(token, "expected '%s'", ";");
+      }
+      token = token->next;
+      break;
     case TK_IF:
       token = token->next;
       if (!equal(token, "(")) {
@@ -91,7 +96,7 @@ Node *stmt(Token **rest, Token *token) {
       }
       token = token->next;
       node->then = stmt(&token, token);
-      if token->kind == TK_ELSE {
+      if (token->kind == TK_ELSE) {
         node->els = stmt(&token, token->next);
       }
       break;

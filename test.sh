@@ -47,5 +47,7 @@ assert 4 'abc=1; abc+3;'
 assert 1 'return 1;'
 assert 2 'return 2; return 1;'
 assert 3 'a=2; return a+1;'
+assert 2 'x = 1; if (x == 1) x = 2; return x;'
+assert 1 'x = 1; if (x != 1) x = 2; return x;'
 
 echo OK

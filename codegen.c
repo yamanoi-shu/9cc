@@ -10,15 +10,9 @@ void gen_lvar(Node *node) {
   printf("  push rax\n");
 }
 
+int labelNum = 0;
+
 void gen(Node *node) {
-  if (node->kind == ND_RETURN) {
-    gen(node->lhs);
-    printf("  pop rax\n");
-    printf("  mov rsp, rbp\n");
-    printf("  pop rbp\n");
-    printf("  ret\n");
-    return;
-  }
   switch (node->kind) {
     case ND_NUM:
       printf("  push %d\n", node->val);
@@ -36,6 +30,30 @@ void gen(Node *node) {
       printf("  pop rax\n");
       printf("  mov [rax], rdi\n");
       printf("  push rdi\n");
+      return;
+    case ND_RETURN:
+      gen(node->lhs);
+      printf("  pop rax\n");
+      printf("  mov rsp, rbp\n");
+      printf("  pop rbp\n");
+      printf("  ret\n");
+      return;
+    case ND_IF:
+      gen(node->cond);
+      printf("  pop rax\n");
+      printf("  cmp rax, 0\n");
+      if (node->els != NULL) {
+        printf("  je .Lelse%d\n", labelNum);
+        gen(node->then);
+        printf("  jmp .Lend%d", labelNum);
+        printf("Lelse%d:\n", labelNum);
+        gen(node->els);
+      } else {
+        printf("  je .Lend%d\n", labelNum);
+        gen(node->then);
+      }
+      printf(".Lend%d:\n", labelNum);
+      labelNum++;
       return;
   } 
 
