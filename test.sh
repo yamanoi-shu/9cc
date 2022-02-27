@@ -51,5 +51,6 @@ assert 2 'x = 1; if (x == 1) x = 2; return x;'
 assert 1 'x = 1; if (x != 1) x = 2; return x;'
 assert 3 'x = 1; if (x != 1) x = 2; else x = 3; return x;'
 assert 5 'x = 1; while (x != 5) x = x + 1; return x;'
+assert 5 'x = 1; for (i = 1; i < 6; i = i+1) x = x + 1; return x;'
 
 echo OK

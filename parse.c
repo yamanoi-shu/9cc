@@ -128,15 +128,18 @@ Node *stmt(Token **rest, Token *token) {
       if (!equal(token, ";")) {
         error_token(token, "expected '%s'", ";");
       }
+      token = token->next;
       if (!equal(token, ";")) {
         node->cond = expr(&token, token);
       }
       if (!equal(token, ";")) {
         error_token(token, "expected '%s'", ";");
       }
+      token = token->next;
       if (!equal(token, ")")) {
         node->inc = expr(&token, token);
       }
+      printf("c\n");
       if (!equal(token, ")")) {
         error_token(token, "expected '%s'", ")");
       }
