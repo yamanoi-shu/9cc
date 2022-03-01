@@ -145,11 +145,23 @@ Node *stmt(Token **rest, Token *token) {
       node->body = stmt(&token, token->next);
       break;
     default:
-      node = expr(&token, token);
-      if (!equal(token, ";")) {
-        error_token(token, "expected '%s'", ";");
+      node = calloc(1, sizeof(Node));
+      if (equal(token, "{")) {
+        node->kind = ND_BLOCK;
+        token = token->next;
+        Node **blockNode = &(node->blockVectorNext);
+        while (!equal(token, "}")) {
+          *blockNode = stmt(&token, token);
+          blockNode = &(*blockNode)->blockVectorNext;
+        }
+        token = token->next;
+      } else {
+        node = expr(&token, token);
+        if (!equal(token, ";")) {
+          error_token(token, "expected '%s'", ";");
+        }
+        token = token->next;
       }
-      token = token->next;
       break;
   }
   *rest = token;
