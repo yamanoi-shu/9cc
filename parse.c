@@ -117,7 +117,7 @@ Node *stmt(Token **rest, Token *token) {
     case TK_FOR:
       token = token->next;
       node = calloc(1, sizeof(Node));
-      node->kind = ND_WHILE;
+      node->kind = ND_FOR;
       if (!equal(token, "(")) {
         error_token(token, "expected '%s'", "(");
       }
@@ -139,7 +139,6 @@ Node *stmt(Token **rest, Token *token) {
       if (!equal(token, ")")) {
         node->inc = expr(&token, token);
       }
-      printf("c\n");
       if (!equal(token, ")")) {
         error_token(token, "expected '%s'", ")");
       }
